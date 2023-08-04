@@ -10,11 +10,10 @@ impl CommandHistory {
     }
 
     pub fn add(&mut self, command: &str) {
-        if let Some(last_command) = self.commands.last() {
-            if command == last_command {
-                return;
-            }
-        }
+        // Remove the old instance of the command, if it exists
+        self.commands.retain(|c| c != command);
+
+        // Add the command to the end of the history
         self.commands.push(command.to_string());
     }
 
