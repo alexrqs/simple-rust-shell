@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::{ self, Write };
 use std::process::Command;
+use colored::*;
 
 // Define a type for a function that takes no arguments and returns nothing.
 type CommandFn = fn();
@@ -12,7 +13,8 @@ fn main() {
     commands.insert("wow", wow_command);
 
     loop {
-        print!("> ");
+        print!("{} ", "#".magenta().bold());
+
         io::stdout().flush().unwrap(); // Print the '>' character immediately
 
         let mut input = String::new();
