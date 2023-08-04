@@ -1,14 +1,15 @@
 mod wow;
 mod history;
 
+use history::CommandHistory;
 use std::io::{ self, Write };
 use colored::*;
 
 fn main() {
-    let mut command_history: Vec<String> = Vec::new();
+    let mut command_history = CommandHistory::new();
 
     loop {
-        print!("{}", "> ".bright_magenta());
+        print!("{}", "# ".bright_magenta());
         io::stdout().flush().unwrap();
 
         let mut input = String::new();
@@ -20,12 +21,12 @@ fn main() {
                 return;
             }
             "wow" => wow::run(),
-            "history" => history::run(&command_history),
+            "history" => command_history.show(),
             _ => println!("{}: command not found", input),
         }
 
         if input != "history" {
-            command_history.push(input.to_string());
+            command_history.add(input);
         }
     }
 }
