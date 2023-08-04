@@ -1,50 +1,31 @@
-use std::collections::HashMap;
+mod wow;
+mod history;
+
 use std::io::{ self, Write };
-use std::process::Command;
 use colored::*;
 
-// Define a type for a function that takes no arguments and returns nothing.
-type CommandFn = fn();
-
 fn main() {
-    let mut commands: HashMap<&str, CommandFn> = HashMap::new();
-
-    // Insert the "wow" command into the map.
-    commands.insert("wow", wow_command);
+    let mut command_history: Vec<String> = Vec::new();
 
     loop {
-        print!("{} ", "#".magenta().bold());
-
-        io::stdout().flush().unwrap(); // Print the '>' character immediately
+        print!("{}", "> ".bright_magenta());
+        io::stdout().flush().unwrap();
 
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim();
 
-        let mut parts = input.trim().split_whitespace();
-        let command = parts.next().unwrap();
-        let args = parts;
-
-        // Check if the command exists in the map.
-        match commands.get(command) {
-            Some(&function) => function(),
-            None => {
-                let output = Command::new(command)
-                    .args(args)
-                    .output()
-                    .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
-
-                if !output.stdout.is_empty() {
-                    println!("{}", String::from_utf8_lossy(&output.stdout));
-                }
-
-                if !output.stderr.is_empty() {
-                    eprintln!("{}", String::from_utf8_lossy(&output.stderr));
-                }
+        match input {
+            "exit" => {
+                return;
             }
+            "wow" => wow::run(),
+            "history" => history::run(&command_history),
+            _ => println!("{}: command not found", input),
+        }
+
+        if input != "history" {
+            command_history.push(input.to_string());
         }
     }
-}
-
-fn wow_command() {
-    println!("This is a command in simple rust shell, wow!");
 }
